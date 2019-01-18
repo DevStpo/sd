@@ -20,6 +20,7 @@ import Avatar from '@material-ui/core/Avatar'
 import ImageIcon from '@material-ui/icons/Image'
 
 import AddCommentDialog from '../AddCommentDialog/AddCommentDialog'
+import EditableField from '../EditableField/EditableField'
 
 class Ticket extends Component {
   static propTypes = {
@@ -100,7 +101,11 @@ class Ticket extends Component {
                 return (
                   <TableRow key={field._id}>
                     <TableCell>
-                      {field.name}: {fields[field.name]}
+                      <EditableField
+                        name={field.name}
+                        value={fields[field.name]}
+                        type={field.fieldType}
+                      />
                     </TableCell>
                   </TableRow>
                 )

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import propTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
+import './editableField.css'
 
 class EditableField extends Component {
   static propTypes = {
@@ -20,39 +21,41 @@ class EditableField extends Component {
   }
 
   onClick = e => {
-    if (e.target.classList.contains('editableField')) {
-      this.setState({
-        isEditing: !this.state.isEditing,
-        value: this.props.value
+    if (e.target.classList.contains('editableField__value')) {
+      this.setState(({ isEditing }) => {
+        return { isEditing: !isEditing, value: this.props.value }
       })
     }
   }
 
   render() {
-    let fieldToRender = ''
-    switch (this.props.fieldType) {
-      case 'text':
-        fieldToRender = (
-          <input
-            type="text"
-            name="value"
-            value={this.state.value}
-            onChange={this.onChange}
-          />
-        )
-    }
-    const field = this.state.isEditing ? fieldToRender : this.props.value
+    const { name, value, type } = this.props
+
+    const fieldToRender = (
+      <input
+        id={name}
+        type={type}
+        name="value"
+        value={this.state.value}
+        onChange={this.onChange}
+      />
+    )
+
+    const field = this.state.isEditing ? fieldToRender : value
 
     return (
-      <span
-        onClick={e => this.onClick(e)}
-        onKeyPress={e => this.onClick(e)}
-        className="editableField"
-        role="textbox"
-        tabIndex={0}
-      >
-        {field}
-      </span>
+      <div className="editableField">
+        <div className="editableField__label">{name}: </div>
+        <div
+          onClick={e => this.onClick(e)}
+          onKeyPress={e => this.onClick(e)}
+          role="textbox"
+          tabIndex={0}
+          className="editableField__value"
+        >
+          {field}
+        </div>
+      </div>
     )
   }
 }

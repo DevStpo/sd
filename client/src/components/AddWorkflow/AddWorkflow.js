@@ -21,8 +21,7 @@ class AddWorkflow extends Component {
     classes: propTypes.object.isRequired,
     addWorkflow: propTypes.func.isRequired,
     getWorkflows: propTypes.func.isRequired,
-    workflow: propTypes.object.isRequired,
-    saved: propTypes.boolean.isRequired
+    workflow: propTypes.object.isRequired
   }
   state = {
     name: '',

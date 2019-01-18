@@ -48,7 +48,7 @@ export default withAuth(
             sessionToken: res.sessionToken
           })
         )
-        .catch(err => throw new Error(`Found an error ${err}`))
+        .catch(err => err)
     }
 
     handleUsernameChange(e) {

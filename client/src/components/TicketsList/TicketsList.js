@@ -53,7 +53,7 @@ function getSorting(order, orderBy) {
 
 class TicketsList extends Component {
   static propTypes = {
-    deleteTicket: propTypes.function.isRequired,
+    deleteTicket: propTypes.func.isRequired,
     classes: propTypes.object.isRequired,
     getTickets: propTypes.func.isRequired,
     getTicket: propTypes.func.isRequired,
