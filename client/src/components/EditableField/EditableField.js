@@ -8,7 +8,9 @@ class EditableField extends Component {
     value: propTypes.string.isRequired,
     fieldType: propTypes.string.isRequired,
     classes: propTypes.object.isRequired,
-    isLoggedIn: propTypes.bool.isRequired
+    isLoggedIn: propTypes.bool.isRequired,
+    name: propTypes.string.isRequired,
+    type: propTypes.string.isRequired
   }
 
   state = {
