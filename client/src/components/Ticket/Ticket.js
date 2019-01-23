@@ -78,7 +78,11 @@ class Ticket extends Component {
     const { reset } = this.state
 
     return (
-      <div onClick={e => this.handleClick(e)}>
+      <div
+        onClick={e => this.handleClick(e)}
+        onKeyDown={e => this.handleClick(e)}
+        role="presentation"
+      >
         <Typography variant="title" color="inherit" className={classes.grow}>
           {fields.title}{' '}
           <Chip label={status} className={classes.chip} color="secondary" />

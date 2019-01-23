@@ -11,7 +11,10 @@ class EditableField extends Component {
     classes: propTypes.object.isRequired,
     isLoggedIn: propTypes.bool.isRequired,
     name: propTypes.string.isRequired,
-    type: propTypes.string.isRequired
+    type: propTypes.string.isRequired,
+    reset: propTypes.boolean.isRequired,
+    updateTicketPartial: propTypes.func.isRequired,
+    saveToId: propTypes.string.isRequired
   }
   static defaultProps = {
     fieldType: '',
