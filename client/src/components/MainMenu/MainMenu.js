@@ -13,6 +13,10 @@ class MainMenu extends Component {
     authData: propTypes.object.isRequired,
     isLoggedIn: propTypes.bool.isRequired
   }
+  static defaultProps = {
+    authData: {},
+    isLoggedIn: false
+  }
   render() {
     const menus = MAIN_MENU
     const {

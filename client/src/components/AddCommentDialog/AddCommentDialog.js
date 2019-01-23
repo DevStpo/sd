@@ -15,9 +15,12 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 class AddCommentDialog extends Component {
   static propTypes = {
     globalAuth: propTypes.object.isRequired,
-    ticket: propTypes.object.isRequired,
+    ticket: propTypes.string.isRequired,
     classes: propTypes.object.isRequired,
     addComment: propTypes.func.isRequired
+  }
+  static defaultProps = {
+    ticket: ''
   }
   state = {
     open: false,

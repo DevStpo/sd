@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import propTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { connect } from 'react-redux'
+import { updateTicketPartial } from '../../actions/ticketActions'
 import './editableField.css'
 
 class EditableField extends Component {
@@ -11,6 +12,17 @@ class EditableField extends Component {
     isLoggedIn: propTypes.bool.isRequired,
     name: propTypes.string.isRequired,
     type: propTypes.string.isRequired
+  }
+  static defaultProps = {
+    fieldType: '',
+    classes: {},
+    isLoggedIn: false
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.reset !== prevProps.reset) {
+      this.setState({ isEditing: false })
+    }
   }
 
   state = {
@@ -30,17 +42,30 @@ class EditableField extends Component {
     }
   }
 
+  save = e => {
+    let textField = e.target.previousSibling
+    this.props.updateTicketPartial(
+      this.props.saveToId,
+      textField.id,
+      textField.value
+    )
+  }
+
   render() {
     const { name, value, type } = this.props
 
     const fieldToRender = (
-      <input
-        id={name}
-        type={type}
-        name="value"
-        value={this.state.value}
-        onChange={this.onChange}
-      />
+      <div>
+        <input
+          id={name}
+          type={type}
+          name="value"
+          value={this.state.value}
+          onChange={this.onChange}
+          className="editableField__input"
+        />
+        <button onClick={e => this.save(e)}>Save</button>
+      </div>
     )
 
     const field = this.state.isEditing ? fieldToRender : value
@@ -62,17 +87,11 @@ class EditableField extends Component {
   }
 }
 
-const styles = {
-  root: {
-    flexGrow: 1
-  },
-  grow: {
-    flexGrow: 1
-  },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20
-  }
-}
+const mapStateToProps = state => ({
+  ticket: state.ticket
+})
 
-export default withStyles(styles)(EditableField)
+export default connect(
+  mapStateToProps,
+  { updateTicketPartial }
+)(EditableField)

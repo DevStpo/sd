@@ -3,6 +3,7 @@ import {
   GET_TICKET,
   ADD_TICKET,
   UPDATE_TICKET_STATUS,
+  UPDATE_TICKET_PARTIAL,
   DELETE_TICKET,
   ADD_COMMENT,
   TICKETS_LOADING
@@ -39,6 +40,12 @@ export default function(state = initialState, action) {
         tickets: [action.payload, ...state.tickets]
       }
     case UPDATE_TICKET_STATUS:
+      return {
+        ...state,
+        currentTicket: action.payload,
+        loading: false
+      }
+    case UPDATE_TICKET_PARTIAL:
       return {
         ...state,
         currentTicket: action.payload,

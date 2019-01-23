@@ -28,6 +28,10 @@ class AddTicketDialog extends Component {
     ticketTypes: propTypes.object.isRequired,
     selectedTicketType: propTypes.object.isRequired
   }
+  static defaultProps = {
+    ticketTypes: {},
+    selectedTicketType: {}
+  }
   state = {
     open: false,
     title: '',

@@ -6,6 +6,7 @@ import {
   ADD_STANDARD_FIELDS,
   UPDATE_TICKET_STATUS,
   DELETE_TICKET,
+  UPDATE_TICKET_PARTIAL,
   TICKETS_LOADING
 } from './types'
 
@@ -56,6 +57,16 @@ export const updateTicketStatus = (
   axios.put(`/api/tickets/${id}`, { workflowStep, nextStatus }).then(res =>
     dispatch({
       type: UPDATE_TICKET_STATUS,
+      payload: res.data
+    })
+  )
+}
+
+export const updateTicketPartial = (id, fieldName, value) => dispatch => {
+  dispatch(setTicketsLoading())
+  axios.put(`/api/tickets/partial/${id}`, { fieldName, value }).then(res =>
+    dispatch({
+      type: UPDATE_TICKET_PARTIAL,
       payload: res.data
     })
   )

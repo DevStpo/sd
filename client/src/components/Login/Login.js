@@ -13,6 +13,10 @@ class Login extends Component {
     baseUrl: propTypes.string.isRequired,
     isAuthenticated: propTypes.bool.isRequired
   }
+  static defaultProps = {
+    getUser: () => {},
+    isAuthenticated: false
+  }
   _isMounted = false
   constructor(props) {
     super(props)

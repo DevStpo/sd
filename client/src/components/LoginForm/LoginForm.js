@@ -21,6 +21,9 @@ export default withAuth(
       auth: propTypes.object.isRequired,
       redirect: propTypes.func.isRequired
     }
+    static defaultProps = {
+      redirect: () => {}
+    }
     constructor(props) {
       super(props)
       this.state = {

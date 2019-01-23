@@ -54,6 +54,27 @@ router.put("/:id", (req, res) => {
     .then(ticket => res.json(ticket));
 });
 
+// @route  PUT api/tickets/partial
+// @desc   Update a field of a ticket
+// @access Public
+router.put("/partial/:id", (req, res) => {
+  // let fields = {};
+  // fields[req.body.fieldName] = req.body.value;
+  let field = `fields.${req.body.fieldName}`;
+  Ticket.findByIdAndUpdate(
+    req.params.id,
+    {
+      $set: { [`fields.${req.body.fieldName}`]: req.body.value }
+    },
+    { new: true }
+  )
+    .populate("comments")
+    .populate("ticketType")
+    .populate("workflow")
+    .exec()
+    .then(ticket => res.json(ticket));
+});
+
 // @route  PUT api/tickets/comment/id
 // @desc   Add a comment to the ticket
 // @access Public
@@ -65,6 +86,8 @@ router.put("/comments/:id", (req, res) => {
   )
     .populate("statusProgression")
     .populate("comments")
+    .populate("ticketType")
+    .populate("workflow")
     .exec()
     .then(ticket => res.json(ticket));
 });

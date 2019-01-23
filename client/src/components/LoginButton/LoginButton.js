@@ -13,6 +13,11 @@ class LoginButton extends Component {
     resetAuthData: propTypes.func.isRequired,
     isAuthenticated: propTypes.bool.isRequired
   }
+  static defaultProps = {
+    login: () => {},
+    logout: () => {},
+    isAuthenticated: false
+  }
   _isMounted = false
   constructor(props) {
     super(props)

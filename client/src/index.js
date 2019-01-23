@@ -11,11 +11,11 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 ReactDOM.render(
-  <React.StrictMode>
-    <DefaultErrorBoundary>
-      <App />
-    </DefaultErrorBoundary>
-  </React.StrictMode>,
+  //<React.StrictMode>
+  <DefaultErrorBoundary>
+    <App />
+  </DefaultErrorBoundary>,
+  //</React.StrictMode>,
   document.getElementById('app')
 )
 //registerServiceWorker();

@@ -27,8 +27,14 @@ class Ticket extends Component {
     classes: propTypes.object.isRequired,
     getTicket: propTypes.func.isRequired,
     updateTicketStatus: propTypes.func.isRequired,
-    ticket: propTypes.func.isRequired,
-    currentTicket: propTypes.func.isRequired
+    ticket: propTypes.object.isRequired,
+    currentTicket: propTypes.object.isRequired
+  }
+  static defaultProps = {
+    currentTicket: {}
+  }
+  state = {
+    reset: false
   }
   getTicketId = () => {
     const url = window.location.pathname.split('/')
@@ -45,6 +51,17 @@ class Ticket extends Component {
     this.props.updateTicketStatus(ticketId, workflowStep + 1, nextStatus)
   }
 
+  handleClick = e => {
+    if (
+      !e.target.classList.contains('editableField__input') &&
+      !e.target.classList.contains('editableField__value')
+    ) {
+      this.setState(({ reset }) => {
+        return { reset: !reset }
+      })
+    }
+  }
+
   render() {
     const { classes } = this.props
     const {
@@ -58,9 +75,10 @@ class Ticket extends Component {
         comments = []
       }
     } = this.props.ticket
+    const { reset } = this.state
 
     return (
-      <div>
+      <div onClick={e => this.handleClick(e)}>
         <Typography variant="title" color="inherit" className={classes.grow}>
           {fields.title}{' '}
           <Chip label={status} className={classes.chip} color="secondary" />
@@ -105,6 +123,8 @@ class Ticket extends Component {
                         name={field.name}
                         value={fields[field.name]}
                         type={field.fieldType}
+                        reset={reset}
+                        saveToId={this.getTicketId()}
                       />
                     </TableCell>
                   </TableRow>
