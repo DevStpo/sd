@@ -21,6 +21,7 @@ import ImageIcon from '@material-ui/icons/Image'
 
 import AddCommentDialog from '../AddCommentDialog/AddCommentDialog'
 import EditableField from '../EditableField/EditableField'
+import AddTimeDialog from '../AddTimeDialog/AddTimeDialog'
 
 class Ticket extends Component {
   static propTypes = {
@@ -116,6 +117,7 @@ class Ticket extends Component {
                   </Button>
                 )
               })}
+            <AddTimeDialog ticket={id} />
           </Toolbar>
           <Table className={classes.table}>
             <TableBody>

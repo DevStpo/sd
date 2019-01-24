@@ -23,6 +23,13 @@ const TicketSchema = new Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "comment"
       }
+    ],
+    time: [
+      {
+        numberOfTime: String,
+        user: String,
+        description: String
+      }
     ]
   },
   { strict: false }

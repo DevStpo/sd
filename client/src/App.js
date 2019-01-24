@@ -12,6 +12,7 @@ import TicketsList from './components/TicketsList/TicketsList'
 import Ticket from './components/Ticket/Ticket'
 import AddWorkflow from './components/AddWorkflow/AddWorkflow'
 import AddTicketType from './components/AddTicketType/AddTicketType'
+import Report from './components/Report/Report'
 
 function onAuthRequired({ history }) {
   history.push('/login')
@@ -46,6 +47,7 @@ class App extends Component {
 
               <SecureRoute path="/dashboard" component={Dashboard} />
               <SecureRoute path="/tickets" component={TicketsList} />
+              <SecureRoute path="/report" component={Report} />
               <Route path="/implicit/callback" component={ImplicitCallback} />
 
               <Route path="/ticket/:id" component={Ticket} />

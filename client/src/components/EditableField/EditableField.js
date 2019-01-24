@@ -12,14 +12,15 @@ class EditableField extends Component {
     isLoggedIn: propTypes.bool.isRequired,
     name: propTypes.string.isRequired,
     type: propTypes.string.isRequired,
-    reset: propTypes.boolean.isRequired,
+    reset: propTypes.bool.isRequired,
     updateTicketPartial: propTypes.func.isRequired,
     saveToId: propTypes.string.isRequired
   }
   static defaultProps = {
     fieldType: '',
     classes: {},
-    isLoggedIn: false
+    isLoggedIn: false,
+    reset: false
   }
 
   componentDidUpdate(prevProps) {

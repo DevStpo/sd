@@ -72,6 +72,16 @@ export const updateTicketPartial = (id, fieldName, value) => dispatch => {
   )
 }
 
+export const addTime = (ticketId, fields) => dispatch => {
+  dispatch(setTicketsLoading())
+  axios.put(`/api/tickets/time/${ticketId}`, { fields }).then(res =>
+    dispatch({
+      type: UPDATE_TICKET_PARTIAL,
+      payload: res.data
+    })
+  )
+}
+
 export const addStandardFields = fields => dispatch => {
   axios.post('/api/tickets/addStandardFields', fields).then(res =>
     dispatch({

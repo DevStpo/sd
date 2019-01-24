@@ -13,6 +13,10 @@ export const MAIN_MENU = [
       {
         linkTo: '/tickets/add-ticket-type',
         label: 'Add Ticket Type'
+      },
+      {
+        linkTo: '/report',
+        label: 'Hours Report'
       }
     ]
   }

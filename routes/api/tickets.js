@@ -31,7 +31,6 @@ router.get("/:id", (req, res) => {
 // @desc   Create a ticket
 // @access Public
 router.post("/", (req, res) => {
-  console.log(req.body);
   const newTicket = new Ticket(req.body);
   newTicket.save().then(ticket => res.json(ticket));
 });
@@ -58,9 +57,6 @@ router.put("/:id", (req, res) => {
 // @desc   Update a field of a ticket
 // @access Public
 router.put("/partial/:id", (req, res) => {
-  // let fields = {};
-  // fields[req.body.fieldName] = req.body.value;
-  let field = `fields.${req.body.fieldName}`;
   Ticket.findByIdAndUpdate(
     req.params.id,
     {
@@ -68,6 +64,24 @@ router.put("/partial/:id", (req, res) => {
     },
     { new: true }
   )
+    .populate("comments")
+    .populate("ticketType")
+    .populate("workflow")
+    .exec()
+    .then(ticket => res.json(ticket));
+});
+
+// @route  PUT api/tickets/time
+// @desc   Update time tracked on a ticket
+// @access Public
+router.put("/time/:id", (req, res) => {
+  console.log(req.body);
+  Ticket.findByIdAndUpdate(
+    req.params.id,
+    { $push: { time: req.body.fields } },
+    { new: true }
+  )
+    .populate("statusProgression")
     .populate("comments")
     .populate("ticketType")
     .populate("workflow")
