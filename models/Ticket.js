@@ -10,6 +10,7 @@ const TicketSchema = new Schema(
     deliveryDate: Date,
     assignee: String,
     reporter: String,
+    companyId: String,
     workflow: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "workflow"

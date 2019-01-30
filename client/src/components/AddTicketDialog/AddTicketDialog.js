@@ -7,6 +7,7 @@ import { withStyles } from '@material-ui/core/styles'
 
 import ButtonBase from '@material-ui/core/ButtonBase'
 import Button from '@material-ui/core/Button'
+import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -64,7 +65,8 @@ class AddTicketDialog extends Component {
       ticketType: this.state.ticketType,
       workflow: this.state.workflow,
       workflowStep: 0,
-      status: this.state.status
+      status: this.state.status,
+      companyId: this.props.globalAuth.authData.companyId
     }
     this.props.addTicket(fieldValues)
   }
@@ -94,17 +96,19 @@ class AddTicketDialog extends Component {
       selectedTicketType: { fields = [] }
     } = this.props.ticketType
 
+    console.log()
+
     return (
       <React.Fragment>
-        <Button
-          variant="fab"
+        <Fab
           color="primary"
           aria-label="Add"
           onClick={this.handleClick.bind(this, 'open')}
           className={classes.fab}
         >
           <AddIcon />
-        </Button>
+        </Fab>
+
         <Dialog
           open={this.state.open}
           onClose={this.handleClick.bind(this, 'close')}
@@ -191,7 +195,8 @@ const styles = theme => ({
 
 const mapStateToProps = state => ({
   ticket: state.ticket,
-  ticketType: state.ticketType
+  ticketType: state.ticketType,
+  globalAuth: state.auth
 })
 
 export default connect(

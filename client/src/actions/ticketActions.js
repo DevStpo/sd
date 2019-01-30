@@ -10,9 +10,9 @@ import {
   TICKETS_LOADING
 } from './types'
 
-export const getTickets = () => dispatch => {
+export const getTickets = companyId => dispatch => {
   dispatch(setTicketsLoading())
-  axios.get('/api/tickets').then(res =>
+  axios.get(`/api/tickets/company/${companyId}`).then(res =>
     dispatch({
       type: GET_TICKETS,
       payload: res.data
@@ -20,9 +20,9 @@ export const getTickets = () => dispatch => {
   )
 }
 
-export const getTicket = id => dispatch => {
+export const getTicket = (companyId, ticketId) => dispatch => {
   dispatch(setTicketsLoading())
-  axios.get(`/api/tickets/${id}`).then(res =>
+  axios.get(`/api/tickets/${companyId}/${ticketId}`).then(res =>
     dispatch({
       type: GET_TICKET,
       payload: res.data

@@ -43,8 +43,12 @@ class Ticket extends Component {
     return ticketId
   }
 
+  getCompanyId = () => {
+    return this.props.globalAuth.authData.companyId
+  }
+
   componentDidMount() {
-    this.props.getTicket(this.getTicketId())
+    this.props.getTicket(this.getCompanyId(), this.getTicketId())
   }
 
   onStatusChanged = obj => {
@@ -190,7 +194,8 @@ const styles = theme => ({
 })
 
 const mapStateToProps = state => ({
-  ticket: state.ticket
+  ticket: state.ticket,
+  globalAuth: state.auth
 })
 
 export default connect(

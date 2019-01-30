@@ -13,6 +13,7 @@ import Ticket from './components/Ticket/Ticket'
 import AddWorkflow from './components/AddWorkflow/AddWorkflow'
 import AddTicketType from './components/AddTicketType/AddTicketType'
 import Report from './components/Report/Report'
+import AddCompany from './components/AddCompany/AddCompany'
 
 function onAuthRequired({ history }) {
   history.push('/login')
@@ -29,6 +30,7 @@ class App extends Component {
               client_id="0oaiox8bixeNHlPGg0h7"
               redirect_uri={window.location.origin + '/implicit/callback'}
               onAuthRequired={onAuthRequired}
+              scope={['openid', 'email', 'profile', 'company']}
             >
               <AppTopbar />
               <Route
@@ -48,6 +50,7 @@ class App extends Component {
               <SecureRoute path="/dashboard" component={Dashboard} />
               <SecureRoute path="/tickets" component={TicketsList} />
               <SecureRoute path="/report" component={Report} />
+              <SecureRoute path="/add-company" component={AddCompany} />
               <Route path="/implicit/callback" component={ImplicitCallback} />
 
               <Route path="/ticket/:id" component={Ticket} />

@@ -1,16 +1,25 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const graphqlHTTP = require("express-graphql");
+const schema = require("./schemaql.js");
 
 const tickets = require("./routes/api/tickets");
 const comments = require("./routes/api/comments");
 const views = require("./routes/api/views");
 const workflows = require("./routes/api/workflows");
 const ticketTypes = require("./routes/api/ticketTypes");
-const companies = require("./routes/api/companies");
 const testModels = require("./routes/api/testModels");
 
 const app = express();
+
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema: schema,
+    graphiql: true
+  })
+);
 
 // Bodyparser middleware
 app.use(bodyParser.json());
@@ -30,7 +39,6 @@ app.use("/api/comments", comments);
 app.use("/api/views", views);
 app.use("/api/workflows", workflows);
 app.use("/api/comments", comments);
-app.use("/api/companies", companies);
 app.use("/api/ticketTypes", ticketTypes);
 app.use("/api/testModels", testModels);
 

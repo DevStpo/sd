@@ -1,5 +1,7 @@
 # Smartempo Service Desk
 
+Dead simple Service Desk for agencies built on React
+
 ## Instructions
 
 1. Install all packages in root and Client folders running

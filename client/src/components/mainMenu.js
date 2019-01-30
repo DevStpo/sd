@@ -17,6 +17,10 @@ export const MAIN_MENU = [
       {
         linkTo: '/report',
         label: 'Hours Report'
+      },
+      {
+        linkTo: '/add-company',
+        label: 'Add Company'
       }
     ]
   }

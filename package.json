@@ -7,12 +7,15 @@
     "client-install": "npm install --prefix client",
     "start": "node server.js",
     "server": "nodemon server.js",
+    "serverql": "nodemon serverql.js",
     "client": "npm run dev:hot --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "dev:ql": "concurrently \"npm run serverql\" \"npm run client\""
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "concurrently": "^4.0.1",
     "express": "^4.16.3",

@@ -8,18 +8,19 @@ const TicketType = require("../../models/TicketType");
 // @route  GET api/tickets
 // @desc   Get all tickets
 // @access Public
-router.get("/", (req, res) => {
-  Ticket.find()
+router.get("/company/:companyId", (req, res) => {
+  console.log(req.params.companyId);
+  Ticket.find({ companyId: req.params.companyId })
     .populate("workflow")
     .exec()
     .then(tickets => res.json(tickets));
 });
 
-// @route  GET api/tickets/:id
+// @route  GET api/tickets/:companyId/:ticketId
 // @desc   Get a ticket
 // @access Public
-router.get("/:id", (req, res) => {
-  Ticket.findById(req.params.id)
+router.get("/:companyId/:ticketId", (req, res) => {
+  Ticket.findOne({ _id: req.params.ticketId, companyId: req.params.companyId })
     .populate("comments")
     .populate("ticketType")
     .populate("workflow")

@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import propTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
+import ApolloClient from 'apollo-boost'
+import { ApolloProvider } from 'react-apollo'
 import {
   getTickets,
   getTicket,
@@ -51,7 +53,11 @@ function getSorting(order, orderBy) {
     : (a, b) => -desc(a, b, orderBy)
 }
 
-class TicketsList extends Component {
+const client = new ApolloClient({
+  uri: 'http://localhost:4000/graphql'
+})
+
+class TicketsListQL extends Component {
   static propTypes = {
     deleteTicket: propTypes.func.isRequired,
     classes: propTypes.object.isRequired,
@@ -71,12 +77,8 @@ class TicketsList extends Component {
     loaded: false
   }
 
-  getCompanyId = () => {
-    return this.props.globalAuth.authData.companyId
-  }
-
   componentDidMount() {
-    this.props.getTickets(this.getCompanyId())
+    this.props.getTickets()
     this.props.getViews()
   }
 
@@ -140,94 +142,96 @@ class TicketsList extends Component {
     const fields = currentView.fields ? currentView.fields : []
 
     return (
-      <div>
-        <Paper className={classes.root}>
-          <TableToolbar numSelected={selected.length} />
-          <div className={classes.tableWrapper}>
-            <Table className={classes.table} aria-labelledby="tableTitle">
-              <TableListHead
-                numSelected={selected.length}
-                order={order}
-                orderBy={orderBy}
-                onSelectAllClick={this.handleSelectAllClick}
-                onRequestSort={this.handleRequestSort}
-                rowCount={tickets.length}
-                fields={fields}
-              />
-              <TableBody>
-                {stableSort(tickets, getSorting(order, orderBy))
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map(ticket => {
-                    const isSelected = this.isSelected(ticket._id)
-                    return (
-                      <TableRow
-                        hover
-                        onClick={event => this.handleClick(event, ticket._id)}
-                        role="checkbox"
-                        aria-checked={isSelected}
-                        tabIndex={-1}
-                        key={ticket._id}
-                        selected={isSelected}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox checked={isSelected} />
-                        </TableCell>
+      <ApolloProvider client={client}>
+        <div>
+          <Paper className={classes.root}>
+            <TableToolbar numSelected={selected.length} />
+            <div className={classes.tableWrapper}>
+              <Table className={classes.table} aria-labelledby="tableTitle">
+                <TableListHead
+                  numSelected={selected.length}
+                  order={order}
+                  orderBy={orderBy}
+                  onSelectAllClick={this.handleSelectAllClick}
+                  onRequestSort={this.handleRequestSort}
+                  rowCount={tickets.length}
+                  fields={fields}
+                />
+                <TableBody>
+                  {stableSort(tickets, getSorting(order, orderBy))
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map(ticket => {
+                      const isSelected = this.isSelected(ticket._id)
+                      return (
+                        <TableRow
+                          hover
+                          onClick={event => this.handleClick(event, ticket._id)}
+                          role="checkbox"
+                          aria-checked={isSelected}
+                          tabIndex={-1}
+                          key={ticket._id}
+                          selected={isSelected}
+                        >
+                          <TableCell padding="checkbox">
+                            <Checkbox checked={isSelected} />
+                          </TableCell>
 
-                        {fields.map(field =>
-                          field.apiName === 'title' ? (
-                            <TableCell key={field._id}>
-                              <Link
-                                to={`/ticket/${ticket._id}`}
-                                onClick={this.onTicketClick.bind(
-                                  this,
-                                  ticket._id
-                                )}
-                              >
+                          {fields.map(field =>
+                            field.apiName === 'title' ? (
+                              <TableCell key={field._id}>
+                                <Link
+                                  to={`/ticket/${ticket._id}`}
+                                  onClick={this.onTicketClick.bind(
+                                    this,
+                                    ticket._id
+                                  )}
+                                >
+                                  {ticket.fields[field.apiName]}
+                                </Link>
+                              </TableCell>
+                            ) : (
+                              <TableCell key={field._id}>
                                 {ticket.fields[field.apiName]}
-                              </Link>
-                            </TableCell>
-                          ) : (
-                            <TableCell key={field._id}>
-                              {ticket.fields[field.apiName]}
-                            </TableCell>
-                          )
-                        )}
+                              </TableCell>
+                            )
+                          )}
 
-                        <TableCell>
-                          <Tooltip title="Delete">
-                            <IconButton aria-label="Delete">
-                              <DeleteIcon
-                                onClick={this.onDeleteClick.bind(
-                                  this,
-                                  ticket._id
-                                )}
-                              />
-                            </IconButton>
-                          </Tooltip>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-              </TableBody>
-            </Table>
-          </div>
-          <TablePagination
-            component="div"
-            count={tickets.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            backIconButtonProps={{
-              'aria-label': 'Previous Page'
-            }}
-            nextIconButtonProps={{
-              'aria-label': 'Next Page'
-            }}
-            onChangePage={this.handleChangePage}
-            onChangeRowsPerPage={this.handleChangeRowsPerPage}
-          />
-        </Paper>
-        <AddTicketDialog />
-      </div>
+                          <TableCell>
+                            <Tooltip title="Delete">
+                              <IconButton aria-label="Delete">
+                                <DeleteIcon
+                                  onClick={this.onDeleteClick.bind(
+                                    this,
+                                    ticket._id
+                                  )}
+                                />
+                              </IconButton>
+                            </Tooltip>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
+                </TableBody>
+              </Table>
+            </div>
+            <TablePagination
+              component="div"
+              count={tickets.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              backIconButtonProps={{
+                'aria-label': 'Previous Page'
+              }}
+              nextIconButtonProps={{
+                'aria-label': 'Next Page'
+              }}
+              onChangePage={this.handleChangePage}
+              onChangeRowsPerPage={this.handleChangeRowsPerPage}
+            />
+          </Paper>
+          <AddTicketDialog />
+        </div>
+      </ApolloProvider>
     )
   }
 }
@@ -245,11 +249,10 @@ const styles = theme => ({
 
 const mapStateToProps = state => ({
   ticket: state.ticket,
-  view: state.view,
-  globalAuth: state.auth
+  view: state.view
 })
 
 export default connect(
   mapStateToProps,
   { getTickets, getTicket, deleteTicket, getViews, setCurrentView }
-)(withStyles(styles)(TicketsList))
+)(withStyles(styles)(TicketsListQL))

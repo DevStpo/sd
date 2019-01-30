@@ -64,7 +64,7 @@ class AddTimeDialog extends Component {
       <div>
         <Button
           variant="contained"
-          color="primary"
+          color="secondary"
           aria-label="Add"
           onClick={this.handleClick.bind(this, 'open')}
           className={classes.fab}
