@@ -1,36 +1,45 @@
 import React, { Component } from 'react'
 import propTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
 import { addTicketType } from '../../actions/ticketTypeActions'
 import { getWorkflows } from '../../actions/workflowActions'
-
 import { TICKET_DEFAULT_FIELDS } from '../ticketDefaultFields'
-
-import Button from '@material-ui/core/Button'
-import TextField from '@material-ui/core/TextField'
-import Select from '@material-ui/core/Select'
-import IconButton from '@material-ui/core/IconButton'
-import DeleteIcon from '@material-ui/icons/Delete'
+import { Link } from 'react-router-dom'
 
 import DataSelect from '../DataSelect/DataSelect'
+import MessageNotification from '../MessageNotification/MessageNotification'
 
 class AddTicketType extends Component {
   static propTypes = {
     workflow: propTypes.object.isRequired,
     workflows: propTypes.object.isRequired,
     getWorkflows: propTypes.func.isRequired,
-    addTicketType: propTypes.func.isRequired,
-    classes: propTypes.object.isRequired
+    addTicketType: propTypes.func.isRequired
   }
-  state = {
+  static defaultProps = {
+    workflows: {}
+  }
+  initialState = {
     ticketTypeName: '',
     fields: [{ name: '', fieldType: 'text' }],
-    workflow: ''
+    workflow: '',
+    isSaved: false
+  }
+  state = {
+    ...this.initialState
   }
 
   componentDidMount() {
     this.props.getWorkflows()
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.ops.isSaved !== prevProps.ops.isSaved) {
+      this.setState({
+        ...this.initialState,
+        fields: [{ name: '', fieldType: 'text' }]
+      })
+    }
   }
 
   setWorkflow = workflow => {
@@ -61,9 +70,22 @@ class AddTicketType extends Component {
     this.setState({ fields })
   }
 
+  toCamelCase = str => {
+    const arr = str.split(' ')
+    const firstWord = arr[0].toLowerCase()
+    const words = arr
+      .slice(1)
+      .map(str => str[0].toUpperCase().concat(str.slice(1)))
+
+    return firstWord.concat(words.join(''))
+  }
   save = () => {
+    const fields = this.state.fields.map(field => ({
+      name: this.toCamelCase(field.name),
+      fieldType: field.fieldType
+    }))
     const values = {
-      fields: [...TICKET_DEFAULT_FIELDS, ...this.state.fields],
+      fields: [...TICKET_DEFAULT_FIELDS, ...fields],
       ticketTypeName: this.state.ticketTypeName,
       workflow: this.state.workflow
     }
@@ -71,8 +93,8 @@ class AddTicketType extends Component {
   }
 
   render() {
-    const { classes } = this.props
     const { fields } = this.state
+    const { isSaved = {} } = this.props.ops
     const defaultFields = TICKET_DEFAULT_FIELDS.map(field => field.name)
     const { workflows = [] } = this.props.workflow
     const options = workflows.map(workflow => ({
@@ -80,16 +102,28 @@ class AddTicketType extends Component {
       label: workflow.name
     }))
 
+    if (workflows.length === 0)
+      return (
+        <div>
+          You need to create at least one Workflow first, before creating a
+          Ticket Type.{' '}
+          <Link to="/main/admin/workflows">Create a new Workflow Here</Link>
+        </div>
+      )
+
     return (
       <div>
-        <TextField
-          label="Ticket Type Name"
-          className={classes.textField}
-          margin="normal"
-          name="ticketTypeName"
-          value={this.state.ticketTypeName}
-          onChange={this.handleChange}
-        />
+        <label htmlFor="ticketTypeName">
+          Ticket Type Name
+          <input
+            type="text"
+            id="ticketTypeName"
+            name="ticketTypeName"
+            value={this.state.ticketTypeName}
+            onChange={this.handleChange}
+          />
+        </label>
+
         {fields
           .filter(field => !defaultFields.includes(field.name))
           .map((field, idx) => {
@@ -98,32 +132,32 @@ class AddTicketType extends Component {
               typeId = `t-${idx}`
             return (
               <div key={fieldId}>
-                <TextField
-                  label="Field Name"
-                  className={classes.textField}
-                  margin="normal"
-                  id={nameId}
-                  name="name"
-                  value={fields[idx].name}
-                  onChange={this.handleChange}
-                />
-                <Select
-                  native={true}
+                <label htmlFor={nameId}>
+                  Field Name
+                  <input
+                    type="text"
+                    id={nameId}
+                    name="name"
+                    value={fields[idx].name}
+                    onChange={this.handleChange}
+                  />
+                </label>
+                <select
                   name="fieldType"
                   id={typeId}
                   value={fields[idx].fieldType}
+                  onBlur={this.handleChange}
                   onChange={this.handleChange}
                 >
                   <option value="text">Text</option>
                   <option value="date">Date</option>
-                </Select>
-                <IconButton
+                </select>
+                <button
                   aria-label="Delete"
-                  className={classes.margin}
                   onClick={this.onDelete.bind(this, idx)}
                 >
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
+                  Delete
+                </button>
               </div>
             )
           })}
@@ -132,46 +166,25 @@ class AddTicketType extends Component {
           label="Workflow"
           handleChange={this.setWorkflow}
         />
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.button}
-          onClick={this.onAddField}
-        >
-          Add a Field
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.button}
-          onClick={this.save}
-        >
-          Save
-        </Button>
+        <div>
+          <button onClick={this.onAddField}>Add a Field</button>
+        </div>
+        <div>
+          <button onClick={this.save}>Save Ticket Type</button>
+        </div>
+        <MessageNotification />
       </div>
     )
   }
 }
 
-const styles = {
-  root: {
-    flexGrow: 1
-  },
-  grow: {
-    flexGrow: 1
-  },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20
-  }
-}
-
 const mapStateToProps = state => ({
   ticketType: state.ticketType,
-  workflow: state.workflow
+  workflow: state.workflow,
+  ops: state.ops
 })
 
 export default connect(
   mapStateToProps,
   { addTicketType, getWorkflows }
-)(withStyles(styles)(AddTicketType))
+)(AddTicketType)

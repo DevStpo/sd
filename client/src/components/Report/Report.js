@@ -2,9 +2,6 @@ import React, { Component } from 'react'
 import propTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { getTickets } from '../../actions/ticketActions'
-
-import Paper from '@material-ui/core/Paper'
-
 import ThePieReport from '../ThePieReport/ThePieReport'
 import TheTableReport from '../TheTableReport/TheTableReport'
 
@@ -12,12 +9,14 @@ import './report.css'
 
 class Report extends Component {
   static propTypes = {
-    getTickets: propTypes.object.isRequired,
-    ticket: propTypes.object.isRequired,
-    tickets: propTypes.object.isRequired
+    getTickets: propTypes.func.isRequired,
+    ticket: propTypes.object.isRequired
   }
   componentDidMount() {
-    this.props.getTickets()
+    this.props.getTickets(this.getCompanyId())
+  }
+  getCompanyId = () => {
+    return this.props.globalAuth.authData.companyId
   }
   getData = type => {
     let dataFinal
@@ -28,6 +27,7 @@ class Report extends Component {
         break
       }
       case 'table': {
+        console.log('tickets', this.props.ticket.tickets)
         dataFinal = this.processData(this.props.ticket.tickets)
         break
       }
@@ -53,6 +53,7 @@ class Report extends Component {
   }
   render() {
     const { tickets } = this.props.ticket
+    console.log(this.props.ticket)
     const pieData = Object.keys(tickets).length
       ? this.getData('pie')
       : this.createDataObj([], [])
@@ -61,18 +62,17 @@ class Report extends Component {
       : [[], []]
 
     return (
-      <Paper elevation={1}>
-        <div className="report">
-          <TheTableReport data={tableData} />
-          <ThePieReport data={pieData} />
-        </div>
-      </Paper>
+      <div className="report">
+        <TheTableReport data={tableData} />
+        <ThePieReport data={pieData} />
+      </div>
     )
   }
 }
 
 const mapStateToProps = state => ({
-  ticket: state.ticket
+  ticket: state.ticket,
+  globalAuth: state.auth
 })
 
 export default connect(

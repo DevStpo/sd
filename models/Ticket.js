@@ -11,6 +11,7 @@ const TicketSchema = new Schema(
     assignee: String,
     reporter: String,
     companyId: String,
+    attachments: Array,
     workflow: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "workflow"

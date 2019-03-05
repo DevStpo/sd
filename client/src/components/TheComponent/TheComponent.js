@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 class TheComponent extends Component {
   render() {
-    return <div>TheComponent</div>
+    return <div>Gaticos!!!!</div>
   }
 }
 

@@ -1,24 +1,16 @@
 import React, { Component } from 'react'
 import propTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
 import { addWorkflow, getWorkflows } from '../../actions/workflowActions'
 import { connect } from 'react-redux'
 
-import Paper from '@material-ui/core/Paper'
-import Button from '@material-ui/core/Button'
-import TextField from '@material-ui/core/TextField'
-import Card from '@material-ui/core/Card'
-import CardActions from '@material-ui/core/CardActions'
-import CardContent from '@material-ui/core/CardContent'
-import Typography from '@material-ui/core/Typography'
 import Chip from '@material-ui/core/Chip'
-import IconButton from '@material-ui/core/IconButton'
-import DeleteIcon from '@material-ui/icons/Delete'
-import Snackbar from '@material-ui/core/Snackbar'
+
+import MessageNotification from '../MessageNotification/MessageNotification'
+
+import './addWorkflow'
 
 class AddWorkflow extends Component {
   static propTypes = {
-    classes: propTypes.object.isRequired,
     addWorkflow: propTypes.func.isRequired,
     getWorkflows: propTypes.func.isRequired,
     workflow: propTypes.object.isRequired
@@ -99,132 +91,86 @@ class AddWorkflow extends Component {
   }
 
   render() {
-    const { classes } = this.props
-    const { workflow, values, showMsg } = this.state
+    const { workflow, values } = this.state
 
     return (
-      <div>
-        {showMsg && (
-          <Snackbar
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'center'
-            }}
-            open={showMsg}
-            autoHideDuration={1000}
-            onClose={this.handleClose}
-            ContentProps={{
-              'aria-describedby': 'message-id'
-            }}
-            message={<span id="message-id">Workflow Added</span>}
-          />
-        )}
-        <Paper className={classes.root}>
-          <TextField
+      <div className="workflow">
+        <label htmlFor="workflowName">
+          Workflow Name
+          <input
+            type="text"
+            id="workflowName"
             name="name"
             label="Workflow Name"
-            type="text"
             value={this.state.name}
             onChange={e => this.handleChange(e)}
           />
-          <Button
-            variant="outlined"
-            color="primary"
-            className={classes.button}
-            onClick={this.onStatusGroupAdd}
-          >
-            Add Status Group
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.button}
-            onClick={this.onSaveWorkflow}
-          >
-            Save Workflow
-          </Button>
+        </label>
+        <div>
+          <button onClick={this.onStatusGroupAdd}>Add Status Group</button>
+        </div>
 
-          {workflow.length > 0 &&
-            workflow.map((statusGroup, idx) => {
-              let statusGroupId = `g-${idx}`
-              return (
-                <Card className={classes.card} key={statusGroupId}>
-                  <CardContent>
-                    <Typography
-                      variant="title"
-                      color="inherit"
-                      className={classes.grow}
-                    >
-                      Status Group
-                    </Typography>
-                    {statusGroup.map((status, idx) => {
-                      let statusId = `s-${idx}`
-                      return (
-                        <Chip
-                          key={statusId}
-                          label={status}
-                          onDelete={this.handleDelete.bind(
-                            this,
-                            statusGroupId,
-                            statusId
-                          )}
-                          className={classes.chip}
-                          color="primary"
-                        />
-                      )
-                    })}
-                  </CardContent>
-                  <CardActions>
-                    <TextField
-                      label="Status"
-                      type="text"
-                      id={statusGroupId}
-                      className="statusGroup-field"
-                      onChange={e => this.handleChange(e, true)}
-                      value={values[idx]}
-                    />
-                    <Button
-                      size="small"
-                      onClick={this.onAddStatus.bind(this, idx, statusGroupId)}
-                    >
-                      Add Status
-                    </Button>
-                    <IconButton
-                      aria-label="Delete"
-                      className={classes.margin}
-                      onClick={this.onDeleteStatusGroup.bind(this, idx)}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </CardActions>
-                </Card>
-              )
-            })}
-        </Paper>
+        {workflow.length > 0 &&
+          workflow.map((statusGroup, idx) => {
+            let statusGroupId = `g-${idx}`
+            return (
+              <div key={statusGroupId}>
+                <h2>Status Group</h2>
+                <div className="status-group">
+                  {statusGroup.map((status, idx) => {
+                    let statusId = `s-${idx}`
+                    return (
+                      <Chip
+                        key={statusId}
+                        label={status}
+                        onDelete={this.handleDelete.bind(
+                          this,
+                          statusGroupId,
+                          statusId
+                        )}
+                        color="primary"
+                      />
+                    )
+                  })}
+                </div>
+                <label htmlFor={statusGroupId}>
+                  Status
+                  <input
+                    type="text"
+                    id={statusGroupId}
+                    onChange={e => this.handleChange(e, true)}
+                    value={values[idx]}
+                  />
+                </label>
+                <button
+                  onClick={this.onAddStatus.bind(this, idx, statusGroupId)}
+                >
+                  Add Status
+                </button>
+                <button
+                  aria-label="Delete"
+                  onClick={this.onDeleteStatusGroup.bind(this, idx)}
+                >
+                  Delete
+                </button>
+              </div>
+            )
+          })}
+        <div>
+          <button onClick={this.onSaveWorkflow}>Save Workflow</button>
+        </div>
+        <MessageNotification />
       </div>
     )
   }
 }
 
-const styles = theme => ({
-  root: {
-    width: '100%',
-    marginTop: theme.spacing.unit * 3,
-    overflowX: 'auto'
-  },
-  button: {
-    margin: theme.spacing.unit
-  },
-  card: {
-    minWidth: 275
-  }
-})
-
 const mapStateToProps = state => ({
-  workflow: state.workflow
+  workflow: state.workflow,
+  ops: state.ops
 })
 
 export default connect(
   mapStateToProps,
   { addWorkflow, getWorkflows }
-)(withStyles(styles)(AddWorkflow))
+)(AddWorkflow)

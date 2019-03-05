@@ -1,9 +1,11 @@
 const express = require("express");
 const router = express.Router();
+const fileParser = require("../../config/keys").fileParser;
 
 // Ticket Model
 const Ticket = require("../../models/Ticket");
 const TicketType = require("../../models/TicketType");
+const AnyFile = require("../../models/AnyFile");
 
 // @route  GET api/tickets
 // @desc   Get all tickets
@@ -19,8 +21,8 @@ router.get("/company/:companyId", (req, res) => {
 // @route  GET api/tickets/:companyId/:ticketId
 // @desc   Get a ticket
 // @access Public
-router.get("/:companyId/:ticketId", (req, res) => {
-  Ticket.findOne({ _id: req.params.ticketId, companyId: req.params.companyId })
+router.get("/:ticketId", (req, res) => {
+  Ticket.findOne({ _id: req.params.ticketId })
     .populate("comments")
     .populate("ticketType")
     .populate("workflow")
@@ -34,6 +36,28 @@ router.get("/:companyId/:ticketId", (req, res) => {
 router.post("/", (req, res) => {
   const newTicket = new Ticket(req.body);
   newTicket.save().then(ticket => res.json(ticket));
+});
+
+// @route  POST api/files
+// @desc   Create a file
+// @access Public
+router.post("/:id/files", fileParser.single("file"), (req, res) => {
+  const file = {};
+  file.url = req.file.url;
+  file.id = req.file.public_id;
+
+  Ticket.findByIdAndUpdate(
+    req.params.id,
+    {
+      $push: { attachments: file }
+    },
+    { new: true }
+  )
+    .populate("comments")
+    .populate("ticketType")
+    .populate("workflow")
+    .exec()
+    .then(ticket => res.json(ticket));
 });
 
 // @route  PUT api/tickets

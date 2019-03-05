@@ -3,24 +3,28 @@ export const MAIN_MENU = [
     label: 'Admin',
     options: [
       {
-        linkTo: '/',
+        linkTo: '/main',
         label: 'Home'
       },
       {
-        linkTo: '/workflows/add',
+        linkTo: '/main/admin/workflows',
         label: 'Add Workflow'
       },
       {
-        linkTo: '/tickets/add-ticket-type',
+        linkTo: '/main/admin/ticket-types',
         label: 'Add Ticket Type'
       },
       {
-        linkTo: '/report',
+        linkTo: '/main/reports',
         label: 'Hours Report'
       },
       {
-        linkTo: '/add-company',
-        label: 'Add Company'
+        linkTo: '/main/admin/companies',
+        label: 'Companies'
+      },
+      {
+        linkTo: '/main/admin/views',
+        label: 'Views'
       }
     ]
   }

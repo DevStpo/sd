@@ -5,7 +5,9 @@ import {
   SET_CURRENT_WORKFLOW,
   ADD_WORKFLOW,
   WORKFLOWS_LOADING,
-  WORKFLOW_SAVING
+  WORKFLOW_SAVING,
+  OPS_SAVE,
+  OPS_SAVE_RESTORE
 } from './types'
 
 export const getWorkflows = () => dispatch => {
@@ -38,12 +40,20 @@ export const setCurrentWorkflow = workflowId => dispatch => {
 
 export const addWorkflow = workflow => dispatch => {
   dispatch(saving())
-  axios.post('/api/workflows', workflow).then(res =>
+  axios.post('/api/workflows', workflow).then(res => {
     dispatch({
       type: ADD_WORKFLOW,
       payload: res.data
     })
-  )
+    dispatch({
+      type: OPS_SAVE
+    })
+    const restore = () =>
+      dispatch({
+        type: OPS_SAVE_RESTORE
+      })
+    setTimeout(restore, 3000)
+  })
 }
 
 export const saving = () => {

@@ -6,10 +6,9 @@ const ViewSchema = new Schema({
   name: {
     type: String
   },
+  isDefault: Boolean,
   fields: [
     {
-      numeric: Boolean,
-      disablePadding: Boolean,
       apiName: String,
       label: String
     }

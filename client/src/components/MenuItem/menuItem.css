@@ -1,0 +1,8 @@
+.menuItem__options {
+  position: absolute;
+  z-index: 99;
+  display: none;
+}
+.menuItem__options--show {
+  display: block;
+}

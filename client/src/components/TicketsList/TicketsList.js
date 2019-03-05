@@ -10,20 +10,14 @@ import {
 import { getViews, setCurrentView } from '../../actions/viewActions'
 
 import { withStyles } from '@material-ui/core/styles'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
 import TablePagination from '@material-ui/core/TablePagination'
-import TableRow from '@material-ui/core/TableRow'
-import Paper from '@material-ui/core/Paper'
-import Checkbox from '@material-ui/core/Checkbox'
-import IconButton from '@material-ui/core/IconButton'
-import Tooltip from '@material-ui/core/Tooltip'
-import DeleteIcon from '@material-ui/icons/Delete'
 
-import TableToolbar from '../TableToolbar/TableToolbar'
 import TableListHead from '../TableListHead/TableListHead'
-import AddTicketDialog from '../AddTicketDialog/AddTicketDialog'
+
+import ModalToggler from '../ModalToggler/ModalToggler'
+import AddTicket from '../AddTicket/AddTicket'
+import ViewSelect from '../ViewSelect/ViewSelect'
+import './ticketsList.css'
 
 function desc(a, b, orderBy) {
   if (b.fields[orderBy].toLowerCase() < a.fields[orderBy].toLowerCase()) {
@@ -60,7 +54,8 @@ class TicketsList extends Component {
     ticket: propTypes.object.isRequired,
     view: propTypes.object.isRequired,
     getViews: propTypes.func.isRequired,
-    setCurrentView: propTypes.func.isRequired
+    setCurrentView: propTypes.func.isRequired,
+    globalAuth: propTypes.object.isRequired
   }
   state = {
     order: 'asc',
@@ -130,103 +125,85 @@ class TicketsList extends Component {
     this.setState({ rowsPerPage: event.target.value })
   }
 
-  isSelected = id => this.state.selected.indexOf(id) !== -1
-
   render() {
     const { tickets } = this.props.ticket
     const { currentView = {} } = this.props.view
-    const { classes } = this.props
     const { order, orderBy, selected, rowsPerPage, page } = this.state
     const fields = currentView.fields ? currentView.fields : []
 
+    if (tickets.length === 0)
+      return (
+        <div>
+          No Tickets created
+          <ModalToggler label="Add Ticket" component={<AddTicket />} />
+        </div>
+      )
+
     return (
-      <div>
-        <Paper className={classes.root}>
-          <TableToolbar numSelected={selected.length} />
-          <div className={classes.tableWrapper}>
-            <Table className={classes.table} aria-labelledby="tableTitle">
-              <TableListHead
-                numSelected={selected.length}
-                order={order}
-                orderBy={orderBy}
-                onSelectAllClick={this.handleSelectAllClick}
-                onRequestSort={this.handleRequestSort}
-                rowCount={tickets.length}
-                fields={fields}
-              />
-              <TableBody>
-                {stableSort(tickets, getSorting(order, orderBy))
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map(ticket => {
-                    const isSelected = this.isSelected(ticket._id)
-                    return (
-                      <TableRow
-                        hover
-                        onClick={event => this.handleClick(event, ticket._id)}
-                        role="checkbox"
-                        aria-checked={isSelected}
-                        tabIndex={-1}
-                        key={ticket._id}
-                        selected={isSelected}
+      <div className="ticketsList">
+        <ViewSelect />
+        <table className="ticketsList__table">
+          <tbody>
+            <TableListHead
+              numSelected={selected.length}
+              order={order}
+              orderBy={orderBy}
+              onSelectAllClick={this.handleSelectAllClick}
+              onRequestSort={this.handleRequestSort}
+              rowCount={tickets.length}
+              fields={fields}
+            />
+
+            {stableSort(tickets, getSorting(order, orderBy))
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((ticket, idx) => {
+                const trKey = `ticket-${idx}`
+                return (
+                  <tr key={trKey}>
+                    {fields.map(field =>
+                      field.apiName === 'title' ? (
+                        <td key={field._id}>
+                          <Link
+                            to={`/main/ticket/${ticket._id}`}
+                            onClick={this.onTicketClick.bind(this, ticket._id)}
+                          >
+                            {ticket.fields[field.apiName]}
+                          </Link>
+                        </td>
+                      ) : (
+                        <td key={field._id}>{ticket.fields[field.apiName]}</td>
+                      )
+                    )}
+
+                    <td>
+                      <button
+                        aria-label="Delete"
+                        onClick={this.onDeleteClick.bind(this, ticket._id)}
                       >
-                        <TableCell padding="checkbox">
-                          <Checkbox checked={isSelected} />
-                        </TableCell>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
+          </tbody>
+        </table>
 
-                        {fields.map(field =>
-                          field.apiName === 'title' ? (
-                            <TableCell key={field._id}>
-                              <Link
-                                to={`/ticket/${ticket._id}`}
-                                onClick={this.onTicketClick.bind(
-                                  this,
-                                  ticket._id
-                                )}
-                              >
-                                {ticket.fields[field.apiName]}
-                              </Link>
-                            </TableCell>
-                          ) : (
-                            <TableCell key={field._id}>
-                              {ticket.fields[field.apiName]}
-                            </TableCell>
-                          )
-                        )}
-
-                        <TableCell>
-                          <Tooltip title="Delete">
-                            <IconButton aria-label="Delete">
-                              <DeleteIcon
-                                onClick={this.onDeleteClick.bind(
-                                  this,
-                                  ticket._id
-                                )}
-                              />
-                            </IconButton>
-                          </Tooltip>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-              </TableBody>
-            </Table>
-          </div>
-          <TablePagination
-            component="div"
-            count={tickets.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            backIconButtonProps={{
-              'aria-label': 'Previous Page'
-            }}
-            nextIconButtonProps={{
-              'aria-label': 'Next Page'
-            }}
-            onChangePage={this.handleChangePage}
-            onChangeRowsPerPage={this.handleChangeRowsPerPage}
-          />
-        </Paper>
-        <AddTicketDialog />
+        <TablePagination
+          component="div"
+          count={tickets.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          backIconButtonProps={{
+            'aria-label': 'Previous Page'
+          }}
+          nextIconButtonProps={{
+            'aria-label': 'Next Page'
+          }}
+          onChangePage={this.handleChangePage}
+          onChangeRowsPerPage={this.handleChangeRowsPerPage}
+        />
+        <ModalToggler label="Add Ticket" component={<AddTicket />} />
       </div>
     )
   }

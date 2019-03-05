@@ -1,10 +1,19 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import propTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 
 import TextField from '@material-ui/core/TextField'
+import FileUploader from '../FileUploader/FileUploader'
 
 class CreateTicketForm extends Component {
+  static propTypes = {
+    fileUploaderAction: propTypes.func.isRequired,
+    classes: propTypes.object.isRequired,
+    fieldValues: propTypes.object.isRequired,
+    setFieldValues: propTypes.func.isRequired,
+    handleFieldValuesChange: propTypes.func.isRequired,
+    fields: propTypes.array.isRequired
+  }
   componentDidUpdate(prevProps) {
     if (prevProps.fields !== this.props.fields) {
       let fields = []
@@ -48,6 +57,14 @@ class CreateTicketForm extends Component {
             fullWidth
           />
         )
+
+      case 'file':
+        return (
+          <FileUploader
+            key={field.name}
+            action={this.props.fileUploaderAction}
+          />
+        )
     }
   }
 
@@ -74,14 +91,6 @@ const styles = {
     marginLeft: -12,
     marginRight: 20
   }
-}
-
-CreateTicketForm.propTypes = {
-  classes: PropTypes.object.isRequired,
-  fieldValues: PropTypes.object.isRequired,
-  setFieldValues: PropTypes.func.isRequired,
-  handleFieldValuesChange: PropTypes.func.isRequired,
-  fields: PropTypes.array.isRequired
 }
 
 export default withStyles(styles)(CreateTicketForm)

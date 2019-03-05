@@ -1,17 +1,19 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-
-// const TheComponent = React.lazy(() => import("../TheComponent/TheComponent"));
-
-// <React.Suspense fallback={null}>
-// <TheComponent />
-// </React.Suspense>
+import ModalToggler from '../ModalToggler/ModalToggler'
+import AddTicket from '../AddTicket/AddTicket'
 
 class Dashboard extends Component {
   render() {
     return (
       <div>
-        <Link to="/tickets">Tickets</Link>
+        <h1>Dashboard</h1>
+        <p>
+          <Link to={`/main/tickets`}>Tickets</Link>
+        </p>
+        <p>
+          <ModalToggler component={<AddTicket />} label={'Add Ticket'} />
+        </p>
       </div>
     )
   }

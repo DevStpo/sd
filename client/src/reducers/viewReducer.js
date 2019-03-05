@@ -1,4 +1,9 @@
-import { GET_VIEWS, SET_CURRENT_VIEW, VIEWS_LOADING } from '../actions/types'
+import {
+  GET_VIEWS,
+  GET_DEFAULT_VIEW,
+  SET_CURRENT_VIEW,
+  VIEWS_LOADING
+} from '../actions/types'
 
 const initialState = {
   views: [],
@@ -12,6 +17,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         views: action.payload,
+        currentView: action.payload[0],
+        loading: false
+      }
+    case GET_DEFAULT_VIEW:
+      return {
+        ...state,
         currentView: action.payload[0],
         loading: false
       }

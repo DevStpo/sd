@@ -76,7 +76,9 @@ class EditableField extends Component {
 
     return (
       <div className="editableField">
-        <div className="editableField__label">{name}: </div>
+        <div className="editableField__label">
+          <b>{name}:</b>{' '}
+        </div>
         <div
           onClick={e => this.onClick(e)}
           onKeyPress={e => this.onClick(e)}

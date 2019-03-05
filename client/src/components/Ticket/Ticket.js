@@ -2,26 +2,23 @@ import React, { Component } from 'react'
 import propTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
-import { getTicket, updateTicketStatus } from '../../actions/ticketActions'
+import {
+  getTicket,
+  updateTicketStatus,
+  addFileToTicket
+} from '../../actions/ticketActions'
 
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import Toolbar from '@material-ui/core/Toolbar'
-import TableRow from '@material-ui/core/TableRow'
-import Paper from '@material-ui/core/Paper'
-import Button from '@material-ui/core/Button'
-import Typography from '@material-ui/core/Typography'
-import Chip from '@material-ui/core/Chip'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import Avatar from '@material-ui/core/Avatar'
 import ImageIcon from '@material-ui/icons/Image'
 
-import AddCommentDialog from '../AddCommentDialog/AddCommentDialog'
+import AddComment from '../AddComment/AddComment'
 import EditableField from '../EditableField/EditableField'
-import AddTimeDialog from '../AddTimeDialog/AddTimeDialog'
+import AddTime from '../AddTime/AddTime'
+import FileUploader from '../FileUploader/FileUploader'
+import ModalToggler from '../ModalToggler/ModalToggler'
 
 class Ticket extends Component {
   static propTypes = {
@@ -29,17 +26,20 @@ class Ticket extends Component {
     getTicket: propTypes.func.isRequired,
     updateTicketStatus: propTypes.func.isRequired,
     ticket: propTypes.object.isRequired,
-    currentTicket: propTypes.object.isRequired
+    currentTicket: propTypes.object.isRequired,
+    globalAuth: propTypes.object.isRequired,
+    addFileToTicket: propTypes.func.isRequired
   }
   static defaultProps = {
     currentTicket: {}
   }
   state = {
-    reset: false
+    reset: false,
+    files: []
   }
   getTicketId = () => {
     const url = window.location.pathname.split('/')
-    const ticketId = url ? url[2] : null
+    const ticketId = url ? url[url.length - 1] : null
     return ticketId
   }
 
@@ -48,7 +48,7 @@ class Ticket extends Component {
   }
 
   componentDidMount() {
-    this.props.getTicket(this.getCompanyId(), this.getTicketId())
+    this.props.getTicket(this.getTicketId())
   }
 
   onStatusChanged = obj => {
@@ -67,8 +67,11 @@ class Ticket extends Component {
     }
   }
 
+  fileUploaderAction = files => {
+    this.props.addFileToTicket(this.getTicketId(), files)
+  }
+
   render() {
-    const { classes } = this.props
     const {
       currentTicket: {
         _id: id,
@@ -77,7 +80,8 @@ class Ticket extends Component {
         workflow: { workflow = [] } = {},
         workflowStep = 0,
         status = '',
-        comments = []
+        comments = [],
+        attachments = []
       }
     } = this.props.ticket
     const { reset } = this.state
@@ -88,86 +92,73 @@ class Ticket extends Component {
         onKeyDown={e => this.handleClick(e)}
         role="presentation"
       >
-        <Typography variant="title" color="inherit" className={classes.grow}>
-          {fields.title}{' '}
-          <Chip label={status} className={classes.chip} color="secondary" />
-        </Typography>
-        <Typography
-          variant="subheading"
-          color="inherit"
-          className={classes.grow}
-        >
-          {fields.description}
-        </Typography>
-        <Paper className={classes.root}>
-          <Toolbar>
-            {workflow[workflowStep] &&
-              workflow[workflowStep].map((nextStatus, idx) => {
-                let btnId = `b-${idx}`
-                return (
-                  <Button
-                    key={btnId}
-                    variant="contained"
-                    color="primary"
-                    className={classes.button}
-                    onClick={this.onStatusChanged.bind(this, {
-                      ticketId: id,
-                      nextStatus,
-                      workflowStep,
-                      workflow
-                    })}
-                  >
-                    {nextStatus}
-                  </Button>
-                )
-              })}
-            <AddTimeDialog ticket={id} />
-          </Toolbar>
-          <Table className={classes.table}>
-            <TableBody>
-              {ticketTypeFields.map(field => {
-                return (
-                  <TableRow key={field._id}>
-                    <TableCell>
-                      <EditableField
-                        name={field.name}
-                        value={fields[field.name]}
-                        type={field.fieldType}
-                        reset={reset}
-                        saveToId={this.getTicketId()}
-                      />
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </Paper>
-
-        <Paper elevation={0} className={classes.root}>
-          <Typography variant="title" color="inherit" className={classes.grow}>
-            Comments
-          </Typography>
-          <AddCommentDialog ticket={id} />
-          <List>
-            {comments.map(comment => {
-              const date = new Date(comment.date)
+        <h1>{fields.title}</h1>
+        <h2>{status}</h2>
+        <div>{fields.description}</div>
+        <div>
+          {workflow[workflowStep] &&
+            workflow[workflowStep].map((nextStatus, idx) => {
+              let btnId = `b-${idx}`
               return (
-                <ListItem key={comment._id}>
-                  <Avatar>
-                    <ImageIcon />
-                  </Avatar>
-                  <ListItemText
-                    primary={`${
-                      comment.author.name
-                    } - ${date.toLocaleString()}`}
-                    secondary={comment.description}
-                  />
-                </ListItem>
+                <button
+                  key={btnId}
+                  onClick={this.onStatusChanged.bind(this, {
+                    ticketId: id,
+                    nextStatus,
+                    workflowStep,
+                    workflow
+                  })}
+                >
+                  {nextStatus}
+                </button>
               )
             })}
-          </List>
-        </Paper>
+        </div>
+        <ModalToggler label="Add Time" component={<AddTime ticket={id} />} />
+        <table>
+          <tbody>
+            {ticketTypeFields.map(field => {
+              return (
+                <tr key={field._id}>
+                  <td>
+                    <EditableField
+                      name={field.name}
+                      value={fields[field.name]}
+                      type={field.fieldType}
+                      reset={reset}
+                      saveToId={this.getTicketId()}
+                    />
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+
+        {attachments.map(attachment => (
+          <div>{attachment.id}</div>
+        ))}
+        <FileUploader action={this.fileUploaderAction} />
+
+        <h1>Comments</h1>
+        <ModalToggler
+          label="Add Comment"
+          component={<AddComment ticket={id} />}
+        />
+        {comments.map(comment => {
+          const date = new Date(comment.date)
+          return (
+            <div key={comment._id}>
+              <img
+                src="https://cdn.iconscout.com/icon/free/png-256/avatar-375-456327.png"
+                alt="avatar"
+                width="50"
+              />
+              <h2>{`${comment.author.name} - ${date.toLocaleString()}`}</h2>
+              <p>{comment.description}</p>
+            </div>
+          )
+        })}
       </div>
     )
   }
@@ -200,5 +191,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getTicket, updateTicketStatus }
+  { getTicket, updateTicketStatus, addFileToTicket }
 )(withStyles(styles)(Ticket))

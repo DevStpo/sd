@@ -3,7 +3,9 @@ import {
   GET_COMMENTS,
   GET_COMMENT,
   ADD_COMMENT,
-  COMMENTS_LOADING
+  COMMENTS_LOADING,
+  OPEN_MODAL,
+  CLOSE_MODAL
 } from './types'
 
 export const getComments = () => dispatch => {
@@ -31,6 +33,9 @@ export const addComment = comment => dispatch => {
     axios
       .put('/api/tickets/comments/' + comment.ticketId, res.data)
       .then(res => {
+        dispatch({
+          type: CLOSE_MODAL
+        })
         dispatch({
           type: ADD_COMMENT,
           payload: res.data

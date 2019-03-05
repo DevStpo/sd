@@ -11,6 +11,13 @@ router.get("/", (req, res) => {
   View.find().then(views => res.json(views));
 });
 
+// @route  GET api/views/default
+// @desc   Get the default view
+// @access Public
+router.get("/default", (req, res) => {
+  View.findOne({ isDefault: true }).then(views => res.json(views));
+});
+
 // @route  GET api/views
 // @desc   Get a single view
 // @access Public
@@ -26,6 +33,7 @@ router.get("/:id", (req, res) => {
 router.post("/", (req, res) => {
   const newView = new View({
     name: req.body.name,
+    isDefault: req.body.isDefault,
     fields: req.body.fields
   });
 

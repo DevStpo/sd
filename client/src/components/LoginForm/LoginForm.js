@@ -2,17 +2,7 @@ import React, { Component } from 'react'
 import propTypes from 'prop-types'
 import OktaAuth from '@okta/okta-auth-js'
 import { withAuth } from '@okta/okta-react'
-
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
-import Button from '@material-ui/core/Button'
-import TextField from '@material-ui/core/TextField'
-
-const styles = {
-  card: {
-    minWidth: 275
-  }
-}
+import './loginForm.css'
 
 export default withAuth(
   class LoginForm extends Component {
@@ -69,36 +59,29 @@ export default withAuth(
       }
 
       return (
-        <Card style={styles.card}>
-          <CardContent>
-            <form onSubmit={this.handleSubmit}>
-              <div>
-                <TextField
-                  id="username"
-                  label="Username"
-                  value={this.state.username}
-                  onChange={this.handleUsernameChange}
-                  margin="normal"
-                />
-              </div>
-              <div>
-                <TextField
-                  id="password"
-                  label="Password"
-                  type="password"
-                  value={this.state.password}
-                  onChange={this.handlePasswordChange}
-                  margin="normal"
-                />
-              </div>
-              <div>
-                <Button type="submit" variant="contained" color="primary">
-                  LogIn
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+        <div className="loginForm">
+          <form onSubmit={this.handleSubmit}>
+            <label htmlFor="username">
+              Username
+              <input
+                type="text"
+                id="username"
+                value={this.state.username}
+                onChange={this.handleUsernameChange}
+              />
+            </label>
+            <label htmlFor="password">
+              Password
+              <input
+                type="password"
+                id="password"
+                value={this.state.password}
+                onChange={this.handlePasswordChange}
+              />
+            </label>
+            <input type="submit" value="Login" />
+          </form>
+        </div>
       )
     }
   }
